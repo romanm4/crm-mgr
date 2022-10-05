@@ -22,6 +22,7 @@ module com.crm.mgr.service {
     exports com.crm.mgr.service.impl;
     exports com.crm.mgr.service.jwt;
     exports com.crm.mgr.service.log;
+    exports com.crm.mgr.service.listener;
 
     opens com.crm.mgr.service.impl to spring.core;
     opens com.crm.mgr.service.jwt to spring.core;
