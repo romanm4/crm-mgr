@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="2_16-09-2022-init-task-statuses.xml">
+        <insert tableName="task_status">
+            <column name="id" value="cfa4178d-3356-4472-9a8e-aff61f7a7b08" />
+            <column name="status" value="pending" />
+        </insert>
+        <insert tableName="task_status">
+            <column name="id" value="2667df1d-c07f-475a-afa0-06e1d41f3cff" />
+            <column name="status" value="completed" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>

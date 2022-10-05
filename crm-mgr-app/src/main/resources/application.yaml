@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  tomcat:
+    uri-encoding: utf-8
+    relaxed-query-chars: '|,{,},[,]'
+
+spring:
+  application:
+    name: crm-mgr
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: sa
+    password: sa
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/crm
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: false
+  test:
+    database:
+      replace: none
+
+rabbitmq:
+  queue: MessageQueue
+  exchange: exchange
+  routingKey: routeKey
+
+springdoc:
+  packagesToScan: com.crm.mgr.rest
+  pathsToMatch: /api/v1/**
+
+jwt:
+  secret: 02d6394a-79c4-4260-bfc7-42917a73f2ae

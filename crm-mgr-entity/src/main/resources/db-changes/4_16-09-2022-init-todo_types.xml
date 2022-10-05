@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="4_16-09-2022-init-todo_types.xml">
+        <insert tableName="todo_type">
+            <column name="id" value="e22515a0-3545-4e34-8e0a-374c63475b61" />
+            <column name="type" value="task" />
+        </insert>
+        <insert tableName="todo_type">
+            <column name="id" value="1438d9a4-eac0-4870-9089-08ab54d0d401" />
+            <column name="type" value="meeting" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>

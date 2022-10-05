@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <include file="db-changes/0_24-08-2022-init-database.xml" relativeToChangelogFile="false"/>
+    <include file="db-changes/1_16-09-2022-init-lead-statuses.xml" relativeToChangelogFile="false"/>
+    <include file="db-changes/2_16-09-2022-init-task-statuses.xml" relativeToChangelogFile="false"/>
+    <include file="db-changes/3_16-09-2022-init-todo_desc-statuses.xml" relativeToChangelogFile="false"/>
+    <include file="db-changes/4_16-09-2022-init-todo_types.xml" relativeToChangelogFile="false"/>
+    <include file="db-changes/5_19-09-2022-init-user_statuses.xml" relativeToChangelogFile="false"/>
+    <include file="db-changes/6_19-09-2022-init-user_roles.xml" relativeToChangelogFile="false"/>
+</databaseChangeLog>

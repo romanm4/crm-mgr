@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="1_16-09-2022-init-lead-statuses.xml">
+        <insert tableName="lead_status">
+            <column name="id" value="aa4e766e-9928-44fa-a34b-87e5db77e860" />
+            <column name="status" value="lead" />
+        </insert>
+        <insert tableName="lead_status">
+            <column name="id" value="868955b4-3515-45b4-aa4c-508392249109" />
+            <column name="status" value="opportunity" />
+        </insert>
+        <insert tableName="lead_status">
+            <column name="id" value="60e29618-a6ca-46d3-961b-a87e3e33a19c" />
+            <column name="status" value="customer/won" />
+        </insert>
+        <insert tableName="lead_status">
+            <column name="id" value="6eea0af6-8a4e-4c40-8c2f-c8320da67166" />
+            <column name="status" value="archive" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: crm-mgr
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    url: jdbc:h2:file:~/testdb
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+  jpa:
+    show-sql: false
+  test:
+    database:
+      replace: none
+
+#rabbitmq:
+#  queue: MessageQueue
+#  exchange: exchange
+#  routingkey: routekey
+
+liquibase:
+  url: jdbc:h2:mem:crm;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS crm
+  user: sa
+  password:
+  default-schema: crm
+  drop-first: true
+
+springdoc:
+  packagesToScan: com.crm.mgr.rest
+  pathsToMatch: /api/v1/**
+
+
+
+
+
+
+
+
+
+
+
+

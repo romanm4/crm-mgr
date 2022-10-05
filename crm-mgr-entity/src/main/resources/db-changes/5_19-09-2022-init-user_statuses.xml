@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="5_19-09-2022-init-user_statuses.xml">
+        <insert tableName="user_status">
+            <column name="id" value="f62947f6-2331-4386-aa43-797d2b878859" />
+            <column name="status" value="1" />
+        </insert>
+        <insert tableName="user_status">
+            <column name="id" value="251877c9-f7ff-4b75-9cd1-2e34d3c678af" />
+            <column name="status" value="2" />
+        </insert>
+        <insert tableName="user_status">
+            <column name="id" value="12495ace-8e01-4468-b831-7544f26c458a" />
+            <column name="status" value="3" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>

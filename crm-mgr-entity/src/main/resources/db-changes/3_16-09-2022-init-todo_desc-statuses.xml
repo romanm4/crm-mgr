@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="3_16-09-2022-init-todo_desc-statuses.xml">
+        <insert tableName="todo_desc">
+            <column name="id" value="bbb62a21-8e5c-4c11-9715-a686e53c5901" />
+            <column name="description" value="Follow Up Email" />
+        </insert>
+        <insert tableName="todo_desc">
+            <column name="id" value="e2cb089e-c6a0-49c8-9501-a3bf2283f590" />
+            <column name="description" value="Phone Call" />
+        </insert>
+        <insert tableName="todo_desc">
+            <column name="id" value="767b863a-223a-4ec8-8e58-71c3afa12937" />
+            <column name="description" value="Lunch Meeting" />
+        </insert>
+        <insert tableName="todo_desc">
+            <column name="id" value="5cc0ae6f-c2d2-4140-ae0a-d79f53872caf" />
+            <column name="description" value="Tech Demo" />
+        </insert>
+        <insert tableName="todo_desc">
+            <column name="id" value="aff879e9-eb15-4cc8-9b4f-5935d9c74642" />
+            <column name="description" value="Meetup" />
+        </insert>
+        <insert tableName="todo_desc">
+            <column name="id" value="ec4be69c-4289-4edb-a90d-80be12c47eca" />
+            <column name="description" value="Conference" />
+        </insert>
+        <insert tableName="todo_desc">
+            <column name="id" value="bede6a93-99c9-4650-a156-aac4e0850176" />
+            <column name="description" value="Others" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>
