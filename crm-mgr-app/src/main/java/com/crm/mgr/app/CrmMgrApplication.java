@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableCaching
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.crm.mgr"})
+@ComponentScan(basePackages = {"com.crm.mgr", "com.crm.mgr.bpm.lead.delegate"})
 @EntityScan(basePackages = {"com.crm.mgr.entity"})
 @EnableJpaRepositories("com.crm.mgr.repo")
 @EnableConfigurationProperties

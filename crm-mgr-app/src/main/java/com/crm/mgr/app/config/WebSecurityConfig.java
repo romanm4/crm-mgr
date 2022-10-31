@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/api/v1/user").hasAuthority("Admin")
-                .antMatchers("/api/v1/jwt/**", "/swagger-ui/**", "/v3/api-docs/**")
+                .antMatchers("/api/v1/jwt/**", "/swagger-ui/**", "/v3/api-docs/**", "/camunda/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

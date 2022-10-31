@@ -30,7 +30,6 @@ public class CustomRequestLoggingFilter extends AbstractRequestLoggingFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //setXTraceId(request, response);
         ContentCachingRequestWrapper req = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper resp = new ContentCachingResponseWrapper(response);
         filterChain.doFilter(req, resp);

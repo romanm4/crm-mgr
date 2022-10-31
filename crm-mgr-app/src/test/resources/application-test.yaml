@@ -39,14 +39,14 @@ springdoc:
   packagesToScan: com.crm.mgr.rest
   pathsToMatch: /api/v1/**
 
-
-
-
-
-
-
-
-
-
-
-
+camunda.bpm:
+  admin-user:
+    id: demo
+    password: demo
+    firstName: Demo
+  filter:
+    create: All tasks
+  metrics:
+    db-reporter-activate: false
+  database:
+    schema-update: create-drop

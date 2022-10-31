@@ -25,6 +25,7 @@ public class LeadDto implements Serializable {
     private Date dateOfInitialLead;
     private UUID salesRepId;
     private UUID leadStatusId;
+    private AddressDto address;
 
     public UUID getId() {
         return id;
@@ -162,6 +163,14 @@ public class LeadDto implements Serializable {
         this.leadStatusId = leadStatusId;
     }
 
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDto address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return "LeadDto{" +
@@ -182,6 +191,7 @@ public class LeadDto implements Serializable {
                 ", dateOfInitialLead=" + dateOfInitialLead +
                 ", salesRepId=" + salesRepId +
                 ", leadStatusId=" + leadStatusId +
+                ", address=" + address +
                 '}';
     }
 }

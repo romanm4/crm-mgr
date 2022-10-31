@@ -34,3 +34,15 @@ springdoc:
 
 jwt:
   secret: 02d6394a-79c4-4260-bfc7-42917a73f2ae
+
+camunda.bpm:
+  admin-user:
+    id: demo
+    password: demo
+    firstName: Demo
+  filter:
+    create: All tasks
+  metrics:
+    db-reporter-activate: false
+  database:
+    schema-update: create-drop

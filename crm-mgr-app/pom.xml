@@ -20,6 +20,12 @@
     <dependencies>
         <dependency>
             <groupId>com.crm.mgr</groupId>
+            <artifactId>crm-mgr-bpm-lead</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.crm.mgr</groupId>
             <artifactId>crm-mgr-rest</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
