@@ -1,4 +1,4 @@
-package com.crm.mgr.app.rabbitmq.tool;
+package com.crm.mgr.service.tool;
 
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

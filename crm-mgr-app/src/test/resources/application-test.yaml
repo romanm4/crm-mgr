@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: crm-mgr
   rabbitmq:
@@ -39,14 +41,22 @@ springdoc:
   packagesToScan: com.crm.mgr.rest
   pathsToMatch: /api/v1/**
 
+camunda.bpm:
+  admin-user:
+    id: demo
+    password: demo
+    firstName: Demo
+  filter:
+    create: All tasks
+  metrics:
+    db-reporter-activate: false
+  database:
+    schema-update: create-drop
 
+security:
+  basic:
+    enabled: false
 
-
-
-
-
-
-
-
-
-
+management:
+  security:
+    enabled: false
