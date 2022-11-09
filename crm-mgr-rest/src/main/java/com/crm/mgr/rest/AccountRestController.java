@@ -20,7 +20,7 @@ public class AccountRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    //@PreAuthorize("hasAuthority('Admin')")
+    @PreAuthorize("hasAuthority('Admin')")
     public AccountDto createAccount(@Valid @RequestBody AccountDto dto) {
         return accountService.createAccount(dto);
     }

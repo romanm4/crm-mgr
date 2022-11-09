@@ -9,6 +9,5 @@
     <include file="db-changes/4_16-09-2022-init-todo_types.xml" relativeToChangelogFile="false"/>
     <include file="db-changes/5_19-09-2022-init-user_statuses.xml" relativeToChangelogFile="false"/>
     <include file="db-changes/6_19-09-2022-init-user_roles.xml" relativeToChangelogFile="false"/>
-<!--    <include file="db-changes/7_31-10-2022-init-camunda-default-tables.xml" relativeToChangelogFile="false"/>-->
     <include file="db-changes/8_09-11-2022-init-test-user.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>
