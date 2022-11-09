@@ -3,12 +3,14 @@ package com.crm.mgr.test;
 import com.crm.mgr.app.CrmMgrApplication;
 import com.crm.mgr.dto.*;
 import com.crm.mgr.service.impl.*;
+import com.crm.mgr.test.tool.AuthTestTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -47,9 +49,11 @@ public class TaskRestControllerTest {
 
     @Test
     public void shouldCreateTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         mockMvc.perform(post("/api/v1/task")
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(taskDto)))
                 .andExpect(status().isOk())
@@ -58,20 +62,24 @@ public class TaskRestControllerTest {
 
     @Test
     public void shouldDeleteTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
         mockMvc.perform(delete("/api/v1/task/" + taskDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldModifyTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
         mockMvc.perform(put("/api/v1/task/" + taskDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(taskDto)))
                 .andExpect(status().isOk())
@@ -80,10 +88,12 @@ public class TaskRestControllerTest {
 
     @Test
     public void shouldGetTaskById() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
         mockMvc.perform(get("/api/v1/task/" + taskDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isNewTodo", is(1)));
@@ -91,10 +101,12 @@ public class TaskRestControllerTest {
 
     @Test
     public void shouldGetTasks() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
         mockMvc.perform(get("/api/v1/task")
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].isNewTodo", is(1)));
@@ -102,42 +114,49 @@ public class TaskRestControllerTest {
 
     @Test
     public void shouldAssignTaskStatusToTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
 
         List<TaskStatusDto> taskStatuses = taskStatusService.getTaskStatuses();
         mockMvc.perform(put("/api/v1/task/" + taskDto.getId().toString() + "/status/" + taskStatuses.get(0).getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldAssignTodoDescToTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
 
         List<TodoDescDto> todoDescs = todoDescService.getTodoDescs();
         mockMvc.perform(put("/api/v1/task/" + taskDto.getId().toString() + "/todo-desc/" + todoDescs.get(0).getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldAssignTodoTypeToTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
 
         List<TodoTypeDto> todoTypes = todoTypeService.getTodoTypes();
         mockMvc.perform(put("/api/v1/task/" + taskDto.getId().toString() + "/todo-type/" + todoTypes.get(0).getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldAssignUserToTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
@@ -147,12 +166,14 @@ public class TaskRestControllerTest {
         userDto = userService.createUser(userDto);
 
         mockMvc.perform(put("/api/v1/task/" + taskDto.getId().toString() + "/user/" + userDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldAssignLeadToTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
@@ -162,12 +183,14 @@ public class TaskRestControllerTest {
         leadDto = leadService.createLead(leadDto);
 
         mockMvc.perform(put("/api/v1/task/" + taskDto.getId().toString() + "/lead/" + leadDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldDeleteUserTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
@@ -178,12 +201,14 @@ public class TaskRestControllerTest {
 
         taskService.assignUserToTask(userDto.getId(), taskDto.getId());
         mockMvc.perform(delete("/api/v1/task/" + taskDto.getId().toString() + "/user/" + userDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldDeleteLeadTask() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "sa", "sa");
         TaskDto taskDto = new TaskDto();
         taskDto.setIsNewTodo(1);
         taskDto = taskService.createTask(taskDto);
@@ -194,6 +219,7 @@ public class TaskRestControllerTest {
 
         taskService.assignLeadToTask(leadDto.getId(), taskDto.getId());
         mockMvc.perform(delete("/api/v1/task/" + taskDto.getId().toString() + "/lead/" + leadDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }

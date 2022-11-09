@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="8_09-11-2022-init-test-user.xml" context="test">
+        <insert tableName="crm_account">
+            <column name="id" value="d89e4adf-d676-4968-946b-e2f93166abe3"/>
+            <column name="login" value="sa"/>
+            <column name="password" value="$2a$10$qgCpYmknnG1ZJsWtPUfgrehCBETPYQc8l4MTJYvoKxrTkvEKQkJRy"/>
+        </insert>
+        <insert tableName="crm_user">
+            <column name="id" value="c069ba23-bb3c-4548-a334-004ec5cdafce"/>
+            <column name="email" value="sa@gmail.com"/>
+            <column name="first_name" value="sa"/>
+            <column name="last_name" value="sa"/>
+            <column name="middle_name" value="sa"/>
+            <column name="role_id" value="feef48f5-1082-4eda-98cb-3cfba3dc6f72"/>
+            <column name="status_id" value="f62947f6-2331-4386-aa43-797d2b878859"/>
+            <column name="account_id" value="d89e4adf-d676-4968-946b-e2f93166abe3"/>
+        </insert>
+
+        <insert tableName="crm_account">
+            <column name="id" value="664636aa-481e-4fcd-a445-92fd1e3b3563"/>
+            <column name="login" value="admin"/>
+            <column name="password" value="$2a$10$qgCpYmknnG1ZJsWtPUfgrehCBETPYQc8l4MTJYvoKxrTkvEKQkJRy"/>
+        </insert>
+        <insert tableName="crm_user">
+            <column name="id" value="d411bdb8-65c1-42d5-bcd8-1f3952cf0fdb"/>
+            <column name="email" value="admin@gmail.com"/>
+            <column name="first_name" value="admin"/>
+            <column name="last_name" value="admin"/>
+            <column name="middle_name" value="admin"/>
+            <column name="role_id" value="fe524c73-d533-49c6-9daf-fa8882d80dc2"/>
+            <column name="status_id" value="f62947f6-2331-4386-aa43-797d2b878859"/>
+            <column name="account_id" value="664636aa-481e-4fcd-a445-92fd1e3b3563"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

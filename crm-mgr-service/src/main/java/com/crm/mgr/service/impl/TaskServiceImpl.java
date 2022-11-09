@@ -1,11 +1,11 @@
 package com.crm.mgr.service.impl;
 
 import com.crm.mgr.app.rabbitmq.producer.TaskMessageProducer;
-import com.crm.mgr.dto.LeadDto;
 import com.crm.mgr.dto.TaskDto;
 import com.crm.mgr.entity.*;
 import com.crm.mgr.mapper.TaskMapper;
 import com.crm.mgr.repo.*;
+import com.crm.mgr.service.tool.EnvironmentTool;
 import com.crm.mgr.specification.SearchCriteria;
 import com.crm.mgr.specification.TaskSpecification;
 import org.springframework.cache.annotation.CacheConfig;
@@ -28,8 +28,9 @@ public class TaskServiceImpl implements TaskService {
     private final LeadRepository leadRepository;
     private final TaskMapper taskMapper;
     private final TaskMessageProducer taskMessageProducer;
+    private final EnvironmentTool environmentTool;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskStatusRepository taskStatusRepository, TodoDescRepository todoDescRepository, TodoTypeRepository todoTypeRepository, UserRepository userRepository, LeadRepository leadRepository, TaskMapper taskMapper, TaskMessageProducer taskMessageProducer) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskStatusRepository taskStatusRepository, TodoDescRepository todoDescRepository, TodoTypeRepository todoTypeRepository, UserRepository userRepository, LeadRepository leadRepository, TaskMapper taskMapper, TaskMessageProducer taskMessageProducer, EnvironmentTool environmentTool) {
         this.taskRepository = taskRepository;
         this.taskStatusRepository = taskStatusRepository;
         this.todoDescRepository = todoDescRepository;
@@ -38,6 +39,7 @@ public class TaskServiceImpl implements TaskService {
         this.leadRepository = leadRepository;
         this.taskMapper = taskMapper;
         this.taskMessageProducer = taskMessageProducer;
+        this.environmentTool = environmentTool;
     }
 
     @Override
@@ -53,7 +55,9 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto createTask(TaskDto dto) {
         TaskEntity entity = taskRepository.save(taskMapper.dtoToEntity(dto));
         TaskDto taskDto = taskMapper.entityToDto(entity);
-        taskMessageProducer.sendTaskMessage(taskDto);
+        if (environmentTool.isNotTestProfile()) {
+            taskMessageProducer.sendTaskMessage(taskDto);
+        }
         return taskDto;
     }
 

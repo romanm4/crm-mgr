@@ -1,4 +1,6 @@
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: crm-mgr
   rabbitmq:
@@ -50,3 +52,11 @@ camunda.bpm:
     db-reporter-activate: false
   database:
     schema-update: create-drop
+
+security:
+  basic:
+    enabled: false
+
+management:
+  security:
+    enabled: false

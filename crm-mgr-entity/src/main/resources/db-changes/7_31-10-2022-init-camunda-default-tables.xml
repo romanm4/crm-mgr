@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet author="roman.maniev" id="7_31-10-2022-init-camunda-default-tables.xml">
+        <sql>
+            CREATE TABLE public.act_ge_bytearray (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            name_ varchar(255) NULL,
+            deployment_id_ varchar(64) NULL,
+            bytes_ bytea NULL,
+            generated_ bool NULL,
+            tenant_id_ varchar(64) NULL,
+            type_ int4 NULL,
+            create_time_ timestamp NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_ge_bytearray_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_bytearr_depl FOREIGN KEY (deployment_id_) REFERENCES public.act_re_deployment(id_)
+            );
+            CREATE INDEX act_idx_bytear_depl ON public.act_ge_bytearray USING btree (deployment_id_);
+            CREATE INDEX act_idx_bytearray_name ON public.act_ge_bytearray USING btree (name_);
+            CREATE INDEX act_idx_bytearray_rm_time ON public.act_ge_bytearray USING btree (removal_time_);
+            CREATE INDEX act_idx_bytearray_root_pi ON public.act_ge_bytearray USING btree (root_proc_inst_id_);
+
+            CREATE TABLE public.act_ge_property (
+            name_ varchar(64) NOT NULL,
+            value_ varchar(300) NULL,
+            rev_ int4 NULL,
+            CONSTRAINT act_ge_property_pkey PRIMARY KEY (name_)
+            );
+
+            CREATE TABLE public.act_ge_schema_log (
+            id_ varchar(64) NOT NULL,
+            timestamp_ timestamp NULL,
+            version_ varchar(255) NULL,
+            CONSTRAINT act_ge_schema_log_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_hi_actinst (
+            id_ varchar(64) NOT NULL,
+            parent_act_inst_id_ varchar(64) NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NOT NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NOT NULL,
+            execution_id_ varchar(64) NOT NULL,
+            act_id_ varchar(255) NOT NULL,
+            task_id_ varchar(64) NULL,
+            call_proc_inst_id_ varchar(64) NULL,
+            call_case_inst_id_ varchar(64) NULL,
+            act_name_ varchar(255) NULL,
+            act_type_ varchar(255) NOT NULL,
+            assignee_ varchar(255) NULL,
+            start_time_ timestamp NOT NULL,
+            end_time_ timestamp NULL,
+            duration_ int8 NULL,
+            act_inst_state_ int4 NULL,
+            sequence_counter_ int8 NULL,
+            tenant_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_actinst_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_act_inst_comp ON public.act_hi_actinst USING btree (execution_id_, act_id_, end_time_, id_);
+            CREATE INDEX act_idx_hi_act_inst_end ON public.act_hi_actinst USING btree (end_time_);
+            CREATE INDEX act_idx_hi_act_inst_proc_def_key ON public.act_hi_actinst USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_act_inst_procinst ON public.act_hi_actinst USING btree (proc_inst_id_, act_id_);
+            CREATE INDEX act_idx_hi_act_inst_rm_time ON public.act_hi_actinst USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_act_inst_start_end ON public.act_hi_actinst USING btree (start_time_, end_time_);
+            CREATE INDEX act_idx_hi_act_inst_stats ON public.act_hi_actinst USING btree (proc_def_id_, proc_inst_id_, act_id_, end_time_, act_inst_state_);
+            CREATE INDEX act_idx_hi_act_inst_tenant_id ON public.act_hi_actinst USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_actinst_root_pi ON public.act_hi_actinst USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_ai_pdefid_end_time ON public.act_hi_actinst USING btree (proc_def_id_, end_time_);
+
+            CREATE TABLE public.act_hi_attachment (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            user_id_ varchar(255) NULL,
+            name_ varchar(255) NULL,
+            description_ varchar(4000) NULL,
+            type_ varchar(255) NULL,
+            task_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            url_ varchar(4000) NULL,
+            content_id_ varchar(64) NULL,
+            tenant_id_ varchar(64) NULL,
+            create_time_ timestamp NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_attachment_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_attachment_content ON public.act_hi_attachment USING btree (content_id_);
+            CREATE INDEX act_idx_hi_attachment_procinst ON public.act_hi_attachment USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_attachment_rm_time ON public.act_hi_attachment USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_attachment_root_pi ON public.act_hi_attachment USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_attachment_task ON public.act_hi_attachment USING btree (task_id_);
+
+            CREATE TABLE public.act_hi_batch (
+            id_ varchar(64) NOT NULL,
+            type_ varchar(255) NULL,
+            total_jobs_ int4 NULL,
+            jobs_per_seed_ int4 NULL,
+            invocations_per_job_ int4 NULL,
+            seed_job_def_id_ varchar(64) NULL,
+            monitor_job_def_id_ varchar(64) NULL,
+            batch_job_def_id_ varchar(64) NULL,
+            tenant_id_ varchar(64) NULL,
+            create_user_id_ varchar(255) NULL,
+            start_time_ timestamp NOT NULL,
+            end_time_ timestamp NULL,
+            removal_time_ timestamp NULL,
+            exec_start_time_ timestamp NULL,
+            CONSTRAINT act_hi_batch_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_hi_bat_rm_time ON public.act_hi_batch USING btree (removal_time_);
+
+            CREATE TABLE public.act_hi_caseactinst (
+            id_ varchar(64) NOT NULL,
+            parent_act_inst_id_ varchar(64) NULL,
+            case_def_id_ varchar(64) NOT NULL,
+            case_inst_id_ varchar(64) NOT NULL,
+            case_act_id_ varchar(255) NOT NULL,
+            task_id_ varchar(64) NULL,
+            call_proc_inst_id_ varchar(64) NULL,
+            call_case_inst_id_ varchar(64) NULL,
+            case_act_name_ varchar(255) NULL,
+            case_act_type_ varchar(255) NULL,
+            create_time_ timestamp NOT NULL,
+            end_time_ timestamp NULL,
+            duration_ int8 NULL,
+            state_ int4 NULL,
+            required_ bool NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_hi_caseactinst_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_cas_a_i_comp ON public.act_hi_caseactinst USING btree (case_act_id_, end_time_, id_);
+            CREATE INDEX act_idx_hi_cas_a_i_create ON public.act_hi_caseactinst USING btree (create_time_);
+            CREATE INDEX act_idx_hi_cas_a_i_end ON public.act_hi_caseactinst USING btree (end_time_);
+            CREATE INDEX act_idx_hi_cas_a_i_tenant_id ON public.act_hi_caseactinst USING btree (tenant_id_);
+
+            CREATE TABLE public.act_hi_caseinst (
+            id_ varchar(64) NOT NULL,
+            case_inst_id_ varchar(64) NOT NULL,
+            business_key_ varchar(255) NULL,
+            case_def_id_ varchar(64) NOT NULL,
+            create_time_ timestamp NOT NULL,
+            close_time_ timestamp NULL,
+            duration_ int8 NULL,
+            state_ int4 NULL,
+            create_user_id_ varchar(255) NULL,
+            super_case_instance_id_ varchar(64) NULL,
+            super_process_instance_id_ varchar(64) NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_hi_caseinst_case_inst_id__key UNIQUE (case_inst_id_),
+            CONSTRAINT act_hi_caseinst_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_cas_i_buskey ON public.act_hi_caseinst USING btree (business_key_);
+            CREATE INDEX act_idx_hi_cas_i_close ON public.act_hi_caseinst USING btree (close_time_);
+            CREATE INDEX act_idx_hi_cas_i_tenant_id ON public.act_hi_caseinst USING btree (tenant_id_);
+
+            CREATE TABLE public.act_hi_comment (
+            id_ varchar(64) NOT NULL,
+            type_ varchar(255) NULL,
+            time_ timestamp NOT NULL,
+            user_id_ varchar(255) NULL,
+            task_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            action_ varchar(255) NULL,
+            message_ varchar(4000) NULL,
+            full_msg_ bytea NULL,
+            tenant_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_comment_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_comment_procinst ON public.act_hi_comment USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_comment_rm_time ON public.act_hi_comment USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_comment_root_pi ON public.act_hi_comment USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_comment_task ON public.act_hi_comment USING btree (task_id_);
+
+            CREATE TABLE public.act_hi_dec_in (
+            id_ varchar(64) NOT NULL,
+            dec_inst_id_ varchar(64) NOT NULL,
+            clause_id_ varchar(64) NULL,
+            clause_name_ varchar(255) NULL,
+            var_type_ varchar(100) NULL,
+            bytearray_id_ varchar(64) NULL,
+            double_ float8 NULL,
+            long_ int8 NULL,
+            text_ varchar(4000) NULL,
+            text2_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            create_time_ timestamp NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_dec_in_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_dec_in_clause ON public.act_hi_dec_in USING btree (dec_inst_id_, clause_id_);
+            CREATE INDEX act_idx_hi_dec_in_inst ON public.act_hi_dec_in USING btree (dec_inst_id_);
+            CREATE INDEX act_idx_hi_dec_in_rm_time ON public.act_hi_dec_in USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_dec_in_root_pi ON public.act_hi_dec_in USING btree (root_proc_inst_id_);
+
+            CREATE TABLE public.act_hi_dec_out (
+            id_ varchar(64) NOT NULL,
+            dec_inst_id_ varchar(64) NOT NULL,
+            clause_id_ varchar(64) NULL,
+            clause_name_ varchar(255) NULL,
+            rule_id_ varchar(64) NULL,
+            rule_order_ int4 NULL,
+            var_name_ varchar(255) NULL,
+            var_type_ varchar(100) NULL,
+            bytearray_id_ varchar(64) NULL,
+            double_ float8 NULL,
+            long_ int8 NULL,
+            text_ varchar(4000) NULL,
+            text2_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            create_time_ timestamp NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_dec_out_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_dec_out_inst ON public.act_hi_dec_out USING btree (dec_inst_id_);
+            CREATE INDEX act_idx_hi_dec_out_rm_time ON public.act_hi_dec_out USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_dec_out_root_pi ON public.act_hi_dec_out USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_dec_out_rule ON public.act_hi_dec_out USING btree (rule_order_, clause_id_);
+
+            CREATE TABLE public.act_hi_decinst (
+            id_ varchar(64) NOT NULL,
+            dec_def_id_ varchar(64) NOT NULL,
+            dec_def_key_ varchar(255) NOT NULL,
+            dec_def_name_ varchar(255) NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            case_def_key_ varchar(255) NULL,
+            case_def_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            act_inst_id_ varchar(64) NULL,
+            act_id_ varchar(255) NULL,
+            eval_time_ timestamp NOT NULL,
+            removal_time_ timestamp NULL,
+            collect_value_ float8 NULL,
+            user_id_ varchar(255) NULL,
+            root_dec_inst_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            dec_req_id_ varchar(64) NULL,
+            dec_req_key_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_hi_decinst_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_dec_inst_act ON public.act_hi_decinst USING btree (act_id_);
+            CREATE INDEX act_idx_hi_dec_inst_act_inst ON public.act_hi_decinst USING btree (act_inst_id_);
+            CREATE INDEX act_idx_hi_dec_inst_ci ON public.act_hi_decinst USING btree (case_inst_id_);
+            CREATE INDEX act_idx_hi_dec_inst_id ON public.act_hi_decinst USING btree (dec_def_id_);
+            CREATE INDEX act_idx_hi_dec_inst_key ON public.act_hi_decinst USING btree (dec_def_key_);
+            CREATE INDEX act_idx_hi_dec_inst_pi ON public.act_hi_decinst USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_dec_inst_req_id ON public.act_hi_decinst USING btree (dec_req_id_);
+            CREATE INDEX act_idx_hi_dec_inst_req_key ON public.act_hi_decinst USING btree (dec_req_key_);
+            CREATE INDEX act_idx_hi_dec_inst_rm_time ON public.act_hi_decinst USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_dec_inst_root_id ON public.act_hi_decinst USING btree (root_dec_inst_id_);
+            CREATE INDEX act_idx_hi_dec_inst_root_pi ON public.act_hi_decinst USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_dec_inst_tenant_id ON public.act_hi_decinst USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_dec_inst_time ON public.act_hi_decinst USING btree (eval_time_);
+
+            CREATE TABLE public.act_hi_detail (
+            id_ varchar(64) NOT NULL,
+            type_ varchar(255) NOT NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            execution_id_ varchar(64) NULL,
+            case_def_key_ varchar(255) NULL,
+            case_def_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            case_execution_id_ varchar(64) NULL,
+            task_id_ varchar(64) NULL,
+            act_inst_id_ varchar(64) NULL,
+            var_inst_id_ varchar(64) NULL,
+            name_ varchar(255) NOT NULL,
+            var_type_ varchar(64) NULL,
+            rev_ int4 NULL,
+            time_ timestamp NOT NULL,
+            bytearray_id_ varchar(64) NULL,
+            double_ float8 NULL,
+            long_ int8 NULL,
+            text_ varchar(4000) NULL,
+            text2_ varchar(4000) NULL,
+            sequence_counter_ int8 NULL,
+            tenant_id_ varchar(64) NULL,
+            operation_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            initial_ bool NULL,
+            CONSTRAINT act_hi_detail_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_detail_act_inst ON public.act_hi_detail USING btree (act_inst_id_);
+            CREATE INDEX act_idx_hi_detail_bytear ON public.act_hi_detail USING btree (bytearray_id_);
+            CREATE INDEX act_idx_hi_detail_case_exec ON public.act_hi_detail USING btree (case_execution_id_);
+            CREATE INDEX act_idx_hi_detail_case_inst ON public.act_hi_detail USING btree (case_inst_id_);
+            CREATE INDEX act_idx_hi_detail_name ON public.act_hi_detail USING btree (name_);
+            CREATE INDEX act_idx_hi_detail_proc_def_key ON public.act_hi_detail USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_detail_proc_inst ON public.act_hi_detail USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_detail_rm_time ON public.act_hi_detail USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_detail_root_pi ON public.act_hi_detail USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_detail_task_bytear ON public.act_hi_detail USING btree (bytearray_id_, task_id_);
+            CREATE INDEX act_idx_hi_detail_task_id ON public.act_hi_detail USING btree (task_id_);
+            CREATE INDEX act_idx_hi_detail_tenant_id ON public.act_hi_detail USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_detail_time ON public.act_hi_detail USING btree (time_);
+            CREATE INDEX act_idx_hi_detail_var_inst_id ON public.act_hi_detail USING btree (var_inst_id_);
+
+            CREATE TABLE public.act_hi_ext_task_log (
+            id_ varchar(64) NOT NULL,
+            timestamp_ timestamp NOT NULL,
+            ext_task_id_ varchar(64) NOT NULL,
+            retries_ int4 NULL,
+            topic_name_ varchar(255) NULL,
+            worker_id_ varchar(255) NULL,
+            priority_ int8 NOT NULL DEFAULT 0,
+            error_msg_ varchar(4000) NULL,
+            error_details_id_ varchar(64) NULL,
+            act_id_ varchar(255) NULL,
+            act_inst_id_ varchar(64) NULL,
+            execution_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            proc_def_key_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            state_ int4 NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_ext_task_log_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_hi_ext_task_log_proc_def_key ON public.act_hi_ext_task_log USING btree (proc_def_key_);
+            CREATE INDEX act_hi_ext_task_log_procdef ON public.act_hi_ext_task_log USING btree (proc_def_id_);
+            CREATE INDEX act_hi_ext_task_log_procinst ON public.act_hi_ext_task_log USING btree (proc_inst_id_);
+            CREATE INDEX act_hi_ext_task_log_rm_time ON public.act_hi_ext_task_log USING btree (removal_time_);
+            CREATE INDEX act_hi_ext_task_log_root_pi ON public.act_hi_ext_task_log USING btree (root_proc_inst_id_);
+            CREATE INDEX act_hi_ext_task_log_tenant_id ON public.act_hi_ext_task_log USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_exttasklog_errordet ON public.act_hi_ext_task_log USING btree (error_details_id_);
+
+            CREATE TABLE public.act_hi_identitylink (
+            id_ varchar(64) NOT NULL,
+            timestamp_ timestamp NOT NULL,
+            type_ varchar(255) NULL,
+            user_id_ varchar(255) NULL,
+            group_id_ varchar(255) NULL,
+            task_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            operation_type_ varchar(64) NULL,
+            assigner_id_ varchar(64) NULL,
+            proc_def_key_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_identitylink_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_ident_link_rm_time ON public.act_hi_identitylink USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_ident_link_task ON public.act_hi_identitylink USING btree (task_id_);
+            CREATE INDEX act_idx_hi_ident_lnk_group ON public.act_hi_identitylink USING btree (group_id_);
+            CREATE INDEX act_idx_hi_ident_lnk_proc_def_key ON public.act_hi_identitylink USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_ident_lnk_root_pi ON public.act_hi_identitylink USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_ident_lnk_tenant_id ON public.act_hi_identitylink USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_ident_lnk_timestamp ON public.act_hi_identitylink USING btree (timestamp_);
+            CREATE INDEX act_idx_hi_ident_lnk_user ON public.act_hi_identitylink USING btree (user_id_);
+
+            CREATE TABLE public.act_hi_incident (
+            id_ varchar(64) NOT NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            execution_id_ varchar(64) NULL,
+            create_time_ timestamp NOT NULL,
+            end_time_ timestamp NULL,
+            incident_msg_ varchar(4000) NULL,
+            incident_type_ varchar(255) NOT NULL,
+            activity_id_ varchar(255) NULL,
+            failed_activity_id_ varchar(255) NULL,
+            cause_incident_id_ varchar(64) NULL,
+            root_cause_incident_id_ varchar(64) NULL,
+            configuration_ varchar(255) NULL,
+            history_configuration_ varchar(255) NULL,
+            incident_state_ int4 NULL,
+            tenant_id_ varchar(64) NULL,
+            job_def_id_ varchar(64) NULL,
+            annotation_ varchar(4000) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_incident_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_incident_create_time ON public.act_hi_incident USING btree (create_time_);
+            CREATE INDEX act_idx_hi_incident_end_time ON public.act_hi_incident USING btree (end_time_);
+            CREATE INDEX act_idx_hi_incident_proc_def_key ON public.act_hi_incident USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_incident_procinst ON public.act_hi_incident USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_incident_rm_time ON public.act_hi_incident USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_incident_root_pi ON public.act_hi_incident USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_incident_tenant_id ON public.act_hi_incident USING btree (tenant_id_);
+
+            CREATE TABLE public.act_hi_job_log (
+            id_ varchar(64) NOT NULL,
+            timestamp_ timestamp NOT NULL,
+            job_id_ varchar(64) NOT NULL,
+            job_duedate_ timestamp NULL,
+            job_retries_ int4 NULL,
+            job_priority_ int8 NOT NULL DEFAULT 0,
+            job_exception_msg_ varchar(4000) NULL,
+            job_exception_stack_id_ varchar(64) NULL,
+            job_state_ int4 NULL,
+            job_def_id_ varchar(64) NULL,
+            job_def_type_ varchar(255) NULL,
+            job_def_configuration_ varchar(255) NULL,
+            act_id_ varchar(255) NULL,
+            failed_act_id_ varchar(255) NULL,
+            execution_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            process_instance_id_ varchar(64) NULL,
+            process_def_id_ varchar(64) NULL,
+            process_def_key_ varchar(255) NULL,
+            deployment_id_ varchar(64) NULL,
+            sequence_counter_ int8 NULL,
+            tenant_id_ varchar(64) NULL,
+            hostname_ varchar(255) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_job_log_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_job_log_ex_stack ON public.act_hi_job_log USING btree (job_exception_stack_id_);
+            CREATE INDEX act_idx_hi_job_log_job_conf ON public.act_hi_job_log USING btree (job_def_configuration_);
+            CREATE INDEX act_idx_hi_job_log_job_def_id ON public.act_hi_job_log USING btree (job_def_id_);
+            CREATE INDEX act_idx_hi_job_log_proc_def_key ON public.act_hi_job_log USING btree (process_def_key_);
+            CREATE INDEX act_idx_hi_job_log_procdef ON public.act_hi_job_log USING btree (process_def_id_);
+            CREATE INDEX act_idx_hi_job_log_procinst ON public.act_hi_job_log USING btree (process_instance_id_);
+            CREATE INDEX act_idx_hi_job_log_rm_time ON public.act_hi_job_log USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_job_log_root_pi ON public.act_hi_job_log USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_job_log_tenant_id ON public.act_hi_job_log USING btree (tenant_id_);
+
+            CREATE TABLE public.act_hi_op_log (
+            id_ varchar(64) NOT NULL,
+            deployment_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            proc_def_key_ varchar(255) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            execution_id_ varchar(64) NULL,
+            case_def_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            case_execution_id_ varchar(64) NULL,
+            task_id_ varchar(64) NULL,
+            job_id_ varchar(64) NULL,
+            job_def_id_ varchar(64) NULL,
+            batch_id_ varchar(64) NULL,
+            user_id_ varchar(255) NULL,
+            timestamp_ timestamp NOT NULL,
+            operation_type_ varchar(64) NULL,
+            operation_id_ varchar(64) NULL,
+            entity_type_ varchar(30) NULL,
+            property_ varchar(64) NULL,
+            org_value_ varchar(4000) NULL,
+            new_value_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            category_ varchar(64) NULL,
+            external_task_id_ varchar(64) NULL,
+            annotation_ varchar(4000) NULL,
+            CONSTRAINT act_hi_op_log_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_op_log_entity_type ON public.act_hi_op_log USING btree (entity_type_);
+            CREATE INDEX act_idx_hi_op_log_op_type ON public.act_hi_op_log USING btree (operation_type_);
+            CREATE INDEX act_idx_hi_op_log_procdef ON public.act_hi_op_log USING btree (proc_def_id_);
+            CREATE INDEX act_idx_hi_op_log_procinst ON public.act_hi_op_log USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_op_log_rm_time ON public.act_hi_op_log USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_op_log_root_pi ON public.act_hi_op_log USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_op_log_task ON public.act_hi_op_log USING btree (task_id_);
+            CREATE INDEX act_idx_hi_op_log_timestamp ON public.act_hi_op_log USING btree (timestamp_);
+            CREATE INDEX act_idx_hi_op_log_user_id ON public.act_hi_op_log USING btree (user_id_);
+
+            CREATE TABLE public.act_hi_procinst (
+            id_ varchar(64) NOT NULL,
+            proc_inst_id_ varchar(64) NOT NULL,
+            business_key_ varchar(255) NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NOT NULL,
+            start_time_ timestamp NOT NULL,
+            end_time_ timestamp NULL,
+            removal_time_ timestamp NULL,
+            duration_ int8 NULL,
+            start_user_id_ varchar(255) NULL,
+            start_act_id_ varchar(255) NULL,
+            end_act_id_ varchar(255) NULL,
+            super_process_instance_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            super_case_instance_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            delete_reason_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            state_ varchar(255) NULL,
+            CONSTRAINT act_hi_procinst_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_hi_procinst_proc_inst_id__key UNIQUE (proc_inst_id_)
+            );
+            CREATE INDEX act_idx_hi_pi_pdefid_end_time ON public.act_hi_procinst USING btree (proc_def_id_, end_time_);
+            CREATE INDEX act_idx_hi_pro_i_buskey ON public.act_hi_procinst USING btree (business_key_);
+            CREATE INDEX act_idx_hi_pro_inst_end ON public.act_hi_procinst USING btree (end_time_);
+            CREATE INDEX act_idx_hi_pro_inst_proc_def_key ON public.act_hi_procinst USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_pro_inst_proc_time ON public.act_hi_procinst USING btree (start_time_, end_time_);
+            CREATE INDEX act_idx_hi_pro_inst_rm_time ON public.act_hi_procinst USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_pro_inst_root_pi ON public.act_hi_procinst USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_pro_inst_tenant_id ON public.act_hi_procinst USING btree (tenant_id_);
+
+            CREATE TABLE public.act_hi_taskinst (
+            id_ varchar(64) NOT NULL,
+            task_def_key_ varchar(255) NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            execution_id_ varchar(64) NULL,
+            case_def_key_ varchar(255) NULL,
+            case_def_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            case_execution_id_ varchar(64) NULL,
+            act_inst_id_ varchar(64) NULL,
+            name_ varchar(255) NULL,
+            parent_task_id_ varchar(64) NULL,
+            description_ varchar(4000) NULL,
+            owner_ varchar(255) NULL,
+            assignee_ varchar(255) NULL,
+            start_time_ timestamp NOT NULL,
+            end_time_ timestamp NULL,
+            duration_ int8 NULL,
+            delete_reason_ varchar(4000) NULL,
+            priority_ int4 NULL,
+            due_date_ timestamp NULL,
+            follow_up_date_ timestamp NULL,
+            tenant_id_ varchar(64) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_taskinst_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_task_inst_end ON public.act_hi_taskinst USING btree (end_time_);
+            CREATE INDEX act_idx_hi_task_inst_proc_def_key ON public.act_hi_taskinst USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_task_inst_rm_time ON public.act_hi_taskinst USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_task_inst_start ON public.act_hi_taskinst USING btree (start_time_);
+            CREATE INDEX act_idx_hi_task_inst_tenant_id ON public.act_hi_taskinst USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_taskinst_procinst ON public.act_hi_taskinst USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_taskinst_root_pi ON public.act_hi_taskinst USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_hi_taskinstid_procinst ON public.act_hi_taskinst USING btree (id_, proc_inst_id_);
+
+            CREATE TABLE public.act_hi_varinst (
+            id_ varchar(64) NOT NULL,
+            proc_def_key_ varchar(255) NULL,
+            proc_def_id_ varchar(64) NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            execution_id_ varchar(64) NULL,
+            act_inst_id_ varchar(64) NULL,
+            case_def_key_ varchar(255) NULL,
+            case_def_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            case_execution_id_ varchar(64) NULL,
+            task_id_ varchar(64) NULL,
+            name_ varchar(255) NOT NULL,
+            var_type_ varchar(100) NULL,
+            create_time_ timestamp NULL,
+            rev_ int4 NULL,
+            bytearray_id_ varchar(64) NULL,
+            double_ float8 NULL,
+            long_ int8 NULL,
+            text_ varchar(4000) NULL,
+            text2_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            state_ varchar(20) NULL,
+            removal_time_ timestamp NULL,
+            CONSTRAINT act_hi_varinst_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_hi_casevar_case_inst ON public.act_hi_varinst USING btree (case_inst_id_);
+            CREATE INDEX act_idx_hi_procvar_name_type ON public.act_hi_varinst USING btree (name_, var_type_);
+            CREATE INDEX act_idx_hi_procvar_proc_inst ON public.act_hi_varinst USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_hi_var_inst_proc_def_key ON public.act_hi_varinst USING btree (proc_def_key_);
+            CREATE INDEX act_idx_hi_var_inst_tenant_id ON public.act_hi_varinst USING btree (tenant_id_);
+            CREATE INDEX act_idx_hi_var_pi_name_type ON public.act_hi_varinst USING btree (proc_inst_id_, name_, var_type_);
+            CREATE INDEX act_idx_hi_varinst_act_inst_id ON public.act_hi_varinst USING btree (act_inst_id_);
+            CREATE INDEX act_idx_hi_varinst_bytear ON public.act_hi_varinst USING btree (bytearray_id_);
+            CREATE INDEX act_idx_hi_varinst_name ON public.act_hi_varinst USING btree (name_);
+            CREATE INDEX act_idx_hi_varinst_rm_time ON public.act_hi_varinst USING btree (removal_time_);
+            CREATE INDEX act_idx_hi_varinst_root_pi ON public.act_hi_varinst USING btree (root_proc_inst_id_);
+
+            CREATE TABLE public.act_id_group (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            name_ varchar(255) NULL,
+            type_ varchar(255) NULL,
+            CONSTRAINT act_id_group_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_id_info (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            user_id_ varchar(64) NULL,
+            type_ varchar(64) NULL,
+            key_ varchar(255) NULL,
+            value_ varchar(255) NULL,
+            password_ bytea NULL,
+            parent_id_ varchar(255) NULL,
+            CONSTRAINT act_id_info_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_id_membership (
+            user_id_ varchar(64) NOT NULL,
+            group_id_ varchar(64) NOT NULL,
+            CONSTRAINT act_id_membership_pkey PRIMARY KEY (user_id_, group_id_),
+            CONSTRAINT act_fk_memb_group FOREIGN KEY (group_id_) REFERENCES public.act_id_group(id_),
+            CONSTRAINT act_fk_memb_user FOREIGN KEY (user_id_) REFERENCES public.act_id_user(id_)
+            );
+            CREATE INDEX act_idx_memb_group ON public.act_id_membership USING btree (group_id_);
+            CREATE INDEX act_idx_memb_user ON public.act_id_membership USING btree (user_id_);
+
+            CREATE TABLE public.act_id_tenant (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            name_ varchar(255) NULL,
+            CONSTRAINT act_id_tenant_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_id_tenant_member (
+            id_ varchar(64) NOT NULL,
+            tenant_id_ varchar(64) NOT NULL,
+            user_id_ varchar(64) NULL,
+            group_id_ varchar(64) NULL,
+            CONSTRAINT act_id_tenant_member_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_uniq_tenant_memb_group UNIQUE (tenant_id_, group_id_),
+            CONSTRAINT act_uniq_tenant_memb_user UNIQUE (tenant_id_, user_id_),
+            CONSTRAINT act_fk_tenant_memb FOREIGN KEY (tenant_id_) REFERENCES public.act_id_tenant(id_),
+            CONSTRAINT act_fk_tenant_memb_group FOREIGN KEY (group_id_) REFERENCES public.act_id_group(id_),
+            CONSTRAINT act_fk_tenant_memb_user FOREIGN KEY (user_id_) REFERENCES public.act_id_user(id_)
+            );
+            CREATE INDEX act_idx_tenant_memb ON public.act_id_tenant_member USING btree (tenant_id_);
+            CREATE INDEX act_idx_tenant_memb_group ON public.act_id_tenant_member USING btree (group_id_);
+            CREATE INDEX act_idx_tenant_memb_user ON public.act_id_tenant_member USING btree (user_id_);
+
+            CREATE TABLE public.act_id_user (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            first_ varchar(255) NULL,
+            last_ varchar(255) NULL,
+            email_ varchar(255) NULL,
+            pwd_ varchar(255) NULL,
+            salt_ varchar(255) NULL,
+            lock_exp_time_ timestamp NULL,
+            attempts_ int4 NULL,
+            picture_id_ varchar(64) NULL,
+            CONSTRAINT act_id_user_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_re_camformdef (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            key_ varchar(255) NOT NULL,
+            version_ int4 NOT NULL,
+            deployment_id_ varchar(64) NULL,
+            resource_name_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_re_camformdef_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_re_case_def (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            category_ varchar(255) NULL,
+            name_ varchar(255) NULL,
+            key_ varchar(255) NOT NULL,
+            version_ int4 NOT NULL,
+            deployment_id_ varchar(64) NULL,
+            resource_name_ varchar(4000) NULL,
+            dgrm_resource_name_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            history_ttl_ int4 NULL,
+            CONSTRAINT act_re_case_def_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_case_def_tenant_id ON public.act_re_case_def USING btree (tenant_id_);
+
+            CREATE TABLE public.act_re_decision_def (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            category_ varchar(255) NULL,
+            name_ varchar(255) NULL,
+            key_ varchar(255) NOT NULL,
+            version_ int4 NOT NULL,
+            deployment_id_ varchar(64) NULL,
+            resource_name_ varchar(4000) NULL,
+            dgrm_resource_name_ varchar(4000) NULL,
+            dec_req_id_ varchar(64) NULL,
+            dec_req_key_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            history_ttl_ int4 NULL,
+            version_tag_ varchar(64) NULL,
+            CONSTRAINT act_re_decision_def_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_dec_req FOREIGN KEY (dec_req_id_) REFERENCES public.act_re_decision_req_def(id_)
+            );
+            CREATE INDEX act_idx_dec_def_req_id ON public.act_re_decision_def USING btree (dec_req_id_);
+            CREATE INDEX act_idx_dec_def_tenant_id ON public.act_re_decision_def USING btree (tenant_id_);
+
+            CREATE TABLE public.act_re_decision_req_def (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            category_ varchar(255) NULL,
+            name_ varchar(255) NULL,
+            key_ varchar(255) NOT NULL,
+            version_ int4 NOT NULL,
+            deployment_id_ varchar(64) NULL,
+            resource_name_ varchar(4000) NULL,
+            dgrm_resource_name_ varchar(4000) NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_re_decision_req_def_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_dec_req_def_tenant_id ON public.act_re_decision_req_def USING btree (tenant_id_);
+
+            CREATE TABLE public.act_re_deployment (
+            id_ varchar(64) NOT NULL,
+            name_ varchar(255) NULL,
+            deploy_time_ timestamp NULL,
+            source_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_re_deployment_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_deployment_name ON public.act_re_deployment USING btree (name_);
+            CREATE INDEX act_idx_deployment_tenant_id ON public.act_re_deployment USING btree (tenant_id_);
+
+            CREATE TABLE public.act_re_procdef (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            category_ varchar(255) NULL,
+            name_ varchar(255) NULL,
+            key_ varchar(255) NOT NULL,
+            version_ int4 NOT NULL,
+            deployment_id_ varchar(64) NULL,
+            resource_name_ varchar(4000) NULL,
+            dgrm_resource_name_ varchar(4000) NULL,
+            has_start_form_key_ bool NULL,
+            suspension_state_ int4 NULL,
+            tenant_id_ varchar(64) NULL,
+            version_tag_ varchar(64) NULL,
+            history_ttl_ int4 NULL,
+            startable_ bool NOT NULL DEFAULT true,
+            CONSTRAINT act_re_procdef_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_procdef_deployment_id ON public.act_re_procdef USING btree (deployment_id_);
+            CREATE INDEX act_idx_procdef_tenant_id ON public.act_re_procdef USING btree (tenant_id_);
+            CREATE INDEX act_idx_procdef_ver_tag ON public.act_re_procdef USING btree (version_tag_);
+
+            CREATE TABLE public.act_ru_authorization (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NOT NULL,
+            type_ int4 NOT NULL,
+            group_id_ varchar(255) NULL,
+            user_id_ varchar(255) NULL,
+            resource_type_ int4 NOT NULL,
+            resource_id_ varchar(255) NULL,
+            perms_ int4 NULL,
+            removal_time_ timestamp NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_authorization_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_uniq_auth_group UNIQUE (type_, group_id_, resource_type_, resource_id_),
+            CONSTRAINT act_uniq_auth_user UNIQUE (type_, user_id_, resource_type_, resource_id_)
+            );
+            CREATE INDEX act_idx_auth_group_id ON public.act_ru_authorization USING btree (group_id_);
+            CREATE INDEX act_idx_auth_resource_id ON public.act_ru_authorization USING btree (resource_id_);
+            CREATE INDEX act_idx_auth_rm_time ON public.act_ru_authorization USING btree (removal_time_);
+            CREATE INDEX act_idx_auth_root_pi ON public.act_ru_authorization USING btree (root_proc_inst_id_);
+
+            CREATE TABLE public.act_ru_batch (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NOT NULL,
+            type_ varchar(255) NULL,
+            total_jobs_ int4 NULL,
+            jobs_created_ int4 NULL,
+            jobs_per_seed_ int4 NULL,
+            invocations_per_job_ int4 NULL,
+            seed_job_def_id_ varchar(64) NULL,
+            batch_job_def_id_ varchar(64) NULL,
+            monitor_job_def_id_ varchar(64) NULL,
+            suspension_state_ int4 NULL,
+            configuration_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            create_user_id_ varchar(255) NULL,
+            start_time_ timestamp NULL,
+            exec_start_time_ timestamp NULL,
+            CONSTRAINT act_ru_batch_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_batch_job_def FOREIGN KEY (batch_job_def_id_) REFERENCES public.act_ru_jobdef(id_),
+            CONSTRAINT act_fk_batch_monitor_job_def FOREIGN KEY (monitor_job_def_id_) REFERENCES public.act_ru_jobdef(id_),
+            CONSTRAINT act_fk_batch_seed_job_def FOREIGN KEY (seed_job_def_id_) REFERENCES public.act_ru_jobdef(id_)
+            );
+            CREATE INDEX act_idx_batch_job_def ON public.act_ru_batch USING btree (batch_job_def_id_);
+            CREATE INDEX act_idx_batch_monitor_job_def ON public.act_ru_batch USING btree (monitor_job_def_id_);
+            CREATE INDEX act_idx_batch_seed_job_def ON public.act_ru_batch USING btree (seed_job_def_id_);
+
+            CREATE TABLE public.act_ru_case_execution (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            case_inst_id_ varchar(64) NULL,
+            super_case_exec_ varchar(64) NULL,
+            super_exec_ varchar(64) NULL,
+            business_key_ varchar(255) NULL,
+            parent_id_ varchar(64) NULL,
+            case_def_id_ varchar(64) NULL,
+            act_id_ varchar(255) NULL,
+            prev_state_ int4 NULL,
+            current_state_ int4 NULL,
+            required_ bool NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_case_execution_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_case_exe_case_def FOREIGN KEY (case_def_id_) REFERENCES public.act_re_case_def(id_),
+            CONSTRAINT act_fk_case_exe_case_inst FOREIGN KEY (case_inst_id_) REFERENCES public.act_ru_case_execution(id_),
+            CONSTRAINT act_fk_case_exe_parent FOREIGN KEY (parent_id_) REFERENCES public.act_ru_case_execution(id_)
+            );
+            CREATE INDEX act_idx_case_exe_case_def ON public.act_ru_case_execution USING btree (case_def_id_);
+            CREATE INDEX act_idx_case_exe_case_inst ON public.act_ru_case_execution USING btree (case_inst_id_);
+            CREATE INDEX act_idx_case_exe_parent ON public.act_ru_case_execution USING btree (parent_id_);
+            CREATE INDEX act_idx_case_exec_buskey ON public.act_ru_case_execution USING btree (business_key_);
+            CREATE INDEX act_idx_case_exec_tenant_id ON public.act_ru_case_execution USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_case_sentry_part (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            case_inst_id_ varchar(64) NULL,
+            case_exec_id_ varchar(64) NULL,
+            sentry_id_ varchar(255) NULL,
+            type_ varchar(255) NULL,
+            source_case_exec_id_ varchar(64) NULL,
+            standard_event_ varchar(255) NULL,
+            source_ varchar(255) NULL,
+            variable_event_ varchar(255) NULL,
+            variable_name_ varchar(255) NULL,
+            satisfied_ bool NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_case_sentry_part_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_case_sentry_case_exec FOREIGN KEY (case_exec_id_) REFERENCES public.act_ru_case_execution(id_),
+            CONSTRAINT act_fk_case_sentry_case_inst FOREIGN KEY (case_inst_id_) REFERENCES public.act_ru_case_execution(id_)
+            );
+            CREATE INDEX act_idx_case_sentry_case_exec ON public.act_ru_case_sentry_part USING btree (case_exec_id_);
+            CREATE INDEX act_idx_case_sentry_case_inst ON public.act_ru_case_sentry_part USING btree (case_inst_id_);
+
+            CREATE TABLE public.act_ru_event_subscr (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            event_type_ varchar(255) NOT NULL,
+            event_name_ varchar(255) NULL,
+            execution_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            activity_id_ varchar(255) NULL,
+            configuration_ varchar(255) NULL,
+            created_ timestamp NOT NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_event_subscr_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_event_exec FOREIGN KEY (execution_id_) REFERENCES public.act_ru_execution(id_)
+            );
+            CREATE INDEX act_idx_event_subscr ON public.act_ru_event_subscr USING btree (execution_id_);
+            CREATE INDEX act_idx_event_subscr_config_ ON public.act_ru_event_subscr USING btree (configuration_);
+            CREATE INDEX act_idx_event_subscr_evt_name ON public.act_ru_event_subscr USING btree (event_name_);
+            CREATE INDEX act_idx_event_subscr_tenant_id ON public.act_ru_event_subscr USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_execution (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            root_proc_inst_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            business_key_ varchar(255) NULL,
+            parent_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            super_exec_ varchar(64) NULL,
+            super_case_exec_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            act_id_ varchar(255) NULL,
+            act_inst_id_ varchar(64) NULL,
+            is_active_ bool NULL,
+            is_concurrent_ bool NULL,
+            is_scope_ bool NULL,
+            is_event_scope_ bool NULL,
+            suspension_state_ int4 NULL,
+            cached_ent_state_ int4 NULL,
+            sequence_counter_ int8 NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_execution_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_exe_parent FOREIGN KEY (parent_id_) REFERENCES public.act_ru_execution(id_),
+            CONSTRAINT act_fk_exe_procdef FOREIGN KEY (proc_def_id_) REFERENCES public.act_re_procdef(id_),
+            CONSTRAINT act_fk_exe_procinst FOREIGN KEY (proc_inst_id_) REFERENCES public.act_ru_execution(id_),
+            CONSTRAINT act_fk_exe_super FOREIGN KEY (super_exec_) REFERENCES public.act_ru_execution(id_)
+            );
+            CREATE INDEX act_idx_exe_parent ON public.act_ru_execution USING btree (parent_id_);
+            CREATE INDEX act_idx_exe_procdef ON public.act_ru_execution USING btree (proc_def_id_);
+            CREATE INDEX act_idx_exe_procinst ON public.act_ru_execution USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_exe_root_pi ON public.act_ru_execution USING btree (root_proc_inst_id_);
+            CREATE INDEX act_idx_exe_super ON public.act_ru_execution USING btree (super_exec_);
+            CREATE INDEX act_idx_exec_buskey ON public.act_ru_execution USING btree (business_key_);
+            CREATE INDEX act_idx_exec_tenant_id ON public.act_ru_execution USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_ext_task (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NOT NULL,
+            worker_id_ varchar(255) NULL,
+            topic_name_ varchar(255) NULL,
+            retries_ int4 NULL,
+            error_msg_ varchar(4000) NULL,
+            error_details_id_ varchar(64) NULL,
+            lock_exp_time_ timestamp NULL,
+            suspension_state_ int4 NULL,
+            execution_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            proc_def_key_ varchar(255) NULL,
+            act_id_ varchar(255) NULL,
+            act_inst_id_ varchar(64) NULL,
+            tenant_id_ varchar(64) NULL,
+            priority_ int8 NOT NULL DEFAULT 0,
+            last_failure_log_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_ext_task_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_ext_task_error_details FOREIGN KEY (error_details_id_) REFERENCES public.act_ge_bytearray(id_),
+            CONSTRAINT act_fk_ext_task_exe FOREIGN KEY (execution_id_) REFERENCES public.act_ru_execution(id_)
+            );
+            CREATE INDEX act_idx_ext_task_err_details ON public.act_ru_ext_task USING btree (error_details_id_);
+            CREATE INDEX act_idx_ext_task_exec ON public.act_ru_ext_task USING btree (execution_id_);
+            CREATE INDEX act_idx_ext_task_priority ON public.act_ru_ext_task USING btree (priority_);
+            CREATE INDEX act_idx_ext_task_tenant_id ON public.act_ru_ext_task USING btree (tenant_id_);
+            CREATE INDEX act_idx_ext_task_topic ON public.act_ru_ext_task USING btree (topic_name_);
+
+            CREATE TABLE public.act_ru_filter (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NOT NULL,
+            resource_type_ varchar(255) NOT NULL,
+            name_ varchar(255) NOT NULL,
+            owner_ varchar(255) NULL,
+            query_ text NOT NULL,
+            properties_ text NULL,
+            CONSTRAINT act_ru_filter_pkey PRIMARY KEY (id_)
+            );
+
+            CREATE TABLE public.act_ru_identitylink (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            group_id_ varchar(255) NULL,
+            type_ varchar(255) NULL,
+            user_id_ varchar(255) NULL,
+            task_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_identitylink_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_athrz_procedef FOREIGN KEY (proc_def_id_) REFERENCES public.act_re_procdef(id_),
+            CONSTRAINT act_fk_tskass_task FOREIGN KEY (task_id_) REFERENCES public.act_ru_task(id_)
+            );
+            CREATE INDEX act_idx_athrz_procedef ON public.act_ru_identitylink USING btree (proc_def_id_);
+            CREATE INDEX act_idx_ident_lnk_group ON public.act_ru_identitylink USING btree (group_id_);
+            CREATE INDEX act_idx_ident_lnk_user ON public.act_ru_identitylink USING btree (user_id_);
+            CREATE INDEX act_idx_tskass_task ON public.act_ru_identitylink USING btree (task_id_);
+
+            CREATE TABLE public.act_ru_incident (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NOT NULL,
+            incident_timestamp_ timestamp NOT NULL,
+            incident_msg_ varchar(4000) NULL,
+            incident_type_ varchar(255) NOT NULL,
+            execution_id_ varchar(64) NULL,
+            activity_id_ varchar(255) NULL,
+            failed_activity_id_ varchar(255) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            cause_incident_id_ varchar(64) NULL,
+            root_cause_incident_id_ varchar(64) NULL,
+            configuration_ varchar(255) NULL,
+            tenant_id_ varchar(64) NULL,
+            job_def_id_ varchar(64) NULL,
+            annotation_ varchar(4000) NULL,
+            CONSTRAINT act_ru_incident_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_inc_cause FOREIGN KEY (cause_incident_id_) REFERENCES public.act_ru_incident(id_),
+            CONSTRAINT act_fk_inc_exe FOREIGN KEY (execution_id_) REFERENCES public.act_ru_execution(id_),
+            CONSTRAINT act_fk_inc_job_def FOREIGN KEY (job_def_id_) REFERENCES public.act_ru_jobdef(id_),
+            CONSTRAINT act_fk_inc_procdef FOREIGN KEY (proc_def_id_) REFERENCES public.act_re_procdef(id_),
+            CONSTRAINT act_fk_inc_procinst FOREIGN KEY (proc_inst_id_) REFERENCES public.act_ru_execution(id_),
+            CONSTRAINT act_fk_inc_rcause FOREIGN KEY (root_cause_incident_id_) REFERENCES public.act_ru_incident(id_)
+            );
+            CREATE INDEX act_idx_inc_causeincid ON public.act_ru_incident USING btree (cause_incident_id_);
+            CREATE INDEX act_idx_inc_configuration ON public.act_ru_incident USING btree (configuration_);
+            CREATE INDEX act_idx_inc_exid ON public.act_ru_incident USING btree (execution_id_);
+            CREATE INDEX act_idx_inc_job_def ON public.act_ru_incident USING btree (job_def_id_);
+            CREATE INDEX act_idx_inc_procdefid ON public.act_ru_incident USING btree (proc_def_id_);
+            CREATE INDEX act_idx_inc_procinstid ON public.act_ru_incident USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_inc_rootcauseincid ON public.act_ru_incident USING btree (root_cause_incident_id_);
+            CREATE INDEX act_idx_inc_tenant_id ON public.act_ru_incident USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_job (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            type_ varchar(255) NOT NULL,
+            lock_exp_time_ timestamp NULL,
+            lock_owner_ varchar(255) NULL,
+            exclusive_ bool NULL,
+            execution_id_ varchar(64) NULL,
+            process_instance_id_ varchar(64) NULL,
+            process_def_id_ varchar(64) NULL,
+            process_def_key_ varchar(255) NULL,
+            retries_ int4 NULL,
+            exception_stack_id_ varchar(64) NULL,
+            exception_msg_ varchar(4000) NULL,
+            failed_act_id_ varchar(255) NULL,
+            duedate_ timestamp NULL,
+            repeat_ varchar(255) NULL,
+            repeat_offset_ int8 NULL DEFAULT 0,
+            handler_type_ varchar(255) NULL,
+            handler_cfg_ varchar(4000) NULL,
+            deployment_id_ varchar(64) NULL,
+            suspension_state_ int4 NOT NULL DEFAULT 1,
+            job_def_id_ varchar(64) NULL,
+            priority_ int8 NOT NULL DEFAULT 0,
+            sequence_counter_ int8 NULL,
+            tenant_id_ varchar(64) NULL,
+            create_time_ timestamp NULL,
+            last_failure_log_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_job_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_job_exception FOREIGN KEY (exception_stack_id_) REFERENCES public.act_ge_bytearray(id_)
+            );
+            CREATE INDEX act_idx_job_exception ON public.act_ru_job USING btree (exception_stack_id_);
+            CREATE INDEX act_idx_job_execution_id ON public.act_ru_job USING btree (execution_id_);
+            CREATE INDEX act_idx_job_handler ON public.act_ru_job USING btree (handler_type_, handler_cfg_);
+            CREATE INDEX act_idx_job_handler_type ON public.act_ru_job USING btree (handler_type_);
+            CREATE INDEX act_idx_job_job_def_id ON public.act_ru_job USING btree (job_def_id_);
+            CREATE INDEX act_idx_job_procinst ON public.act_ru_job USING btree (process_instance_id_);
+            CREATE INDEX act_idx_job_tenant_id ON public.act_ru_job USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_jobdef (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            proc_def_id_ varchar(64) NULL,
+            proc_def_key_ varchar(255) NULL,
+            act_id_ varchar(255) NULL,
+            job_type_ varchar(255) NOT NULL,
+            job_configuration_ varchar(255) NULL,
+            suspension_state_ int4 NULL,
+            job_priority_ int8 NULL,
+            tenant_id_ varchar(64) NULL,
+            deployment_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_jobdef_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_jobdef_proc_def_id ON public.act_ru_jobdef USING btree (proc_def_id_);
+            CREATE INDEX act_idx_jobdef_tenant_id ON public.act_ru_jobdef USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_meter_log (
+            id_ varchar(64) NOT NULL,
+            name_ varchar(64) NOT NULL,
+            reporter_ varchar(255) NULL,
+            value_ int8 NULL,
+            timestamp_ timestamp NULL,
+            milliseconds_ int8 NULL DEFAULT 0,
+            CONSTRAINT act_ru_meter_log_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_meter_log ON public.act_ru_meter_log USING btree (name_, timestamp_);
+            CREATE INDEX act_idx_meter_log_ms ON public.act_ru_meter_log USING btree (milliseconds_);
+            CREATE INDEX act_idx_meter_log_name_ms ON public.act_ru_meter_log USING btree (name_, milliseconds_);
+            CREATE INDEX act_idx_meter_log_report ON public.act_ru_meter_log USING btree (name_, reporter_, milliseconds_);
+            CREATE INDEX act_idx_meter_log_time ON public.act_ru_meter_log USING btree (timestamp_);
+
+            CREATE TABLE public.act_ru_task (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            execution_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            case_execution_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            case_def_id_ varchar(64) NULL,
+            name_ varchar(255) NULL,
+            parent_task_id_ varchar(64) NULL,
+            description_ varchar(4000) NULL,
+            task_def_key_ varchar(255) NULL,
+            owner_ varchar(255) NULL,
+            assignee_ varchar(255) NULL,
+            delegation_ varchar(64) NULL,
+            priority_ int4 NULL,
+            create_time_ timestamp NULL,
+            last_updated_ timestamp NULL,
+            due_date_ timestamp NULL,
+            follow_up_date_ timestamp NULL,
+            suspension_state_ int4 NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_task_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_fk_task_case_def FOREIGN KEY (case_def_id_) REFERENCES public.act_re_case_def(id_),
+            CONSTRAINT act_fk_task_case_exe FOREIGN KEY (case_execution_id_) REFERENCES public.act_ru_case_execution(id_),
+            CONSTRAINT act_fk_task_exe FOREIGN KEY (execution_id_) REFERENCES public.act_ru_execution(id_),
+            CONSTRAINT act_fk_task_procdef FOREIGN KEY (proc_def_id_) REFERENCES public.act_re_procdef(id_),
+            CONSTRAINT act_fk_task_procinst FOREIGN KEY (proc_inst_id_) REFERENCES public.act_ru_execution(id_)
+            );
+            CREATE INDEX act_idx_task_assignee ON public.act_ru_task USING btree (assignee_);
+            CREATE INDEX act_idx_task_case_def_id ON public.act_ru_task USING btree (case_def_id_);
+            CREATE INDEX act_idx_task_case_exec ON public.act_ru_task USING btree (case_execution_id_);
+            CREATE INDEX act_idx_task_create ON public.act_ru_task USING btree (create_time_);
+            CREATE INDEX act_idx_task_exec ON public.act_ru_task USING btree (execution_id_);
+            CREATE INDEX act_idx_task_last_updated ON public.act_ru_task USING btree (last_updated_);
+            CREATE INDEX act_idx_task_owner ON public.act_ru_task USING btree (owner_);
+            CREATE INDEX act_idx_task_procdef ON public.act_ru_task USING btree (proc_def_id_);
+            CREATE INDEX act_idx_task_procinst ON public.act_ru_task USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_task_tenant_id ON public.act_ru_task USING btree (tenant_id_);
+
+            CREATE TABLE public.act_ru_task_meter_log (
+            id_ varchar(64) NOT NULL,
+            assignee_hash_ int8 NULL,
+            timestamp_ timestamp NULL,
+            CONSTRAINT act_ru_task_meter_log_pkey PRIMARY KEY (id_)
+            );
+            CREATE INDEX act_idx_task_meter_log_time ON public.act_ru_task_meter_log USING btree (timestamp_);
+
+            CREATE TABLE public.act_ru_variable (
+            id_ varchar(64) NOT NULL,
+            rev_ int4 NULL,
+            type_ varchar(255) NOT NULL,
+            name_ varchar(255) NOT NULL,
+            execution_id_ varchar(64) NULL,
+            proc_inst_id_ varchar(64) NULL,
+            proc_def_id_ varchar(64) NULL,
+            case_execution_id_ varchar(64) NULL,
+            case_inst_id_ varchar(64) NULL,
+            task_id_ varchar(64) NULL,
+            batch_id_ varchar(64) NULL,
+            bytearray_id_ varchar(64) NULL,
+            double_ float8 NULL,
+            long_ int8 NULL,
+            text_ varchar(4000) NULL,
+            text2_ varchar(4000) NULL,
+            var_scope_ varchar(64) NULL,
+            sequence_counter_ int8 NULL,
+            is_concurrent_local_ bool NULL,
+            tenant_id_ varchar(64) NULL,
+            CONSTRAINT act_ru_variable_pkey PRIMARY KEY (id_),
+            CONSTRAINT act_uniq_variable UNIQUE (var_scope_, name_),
+            CONSTRAINT act_fk_var_batch FOREIGN KEY (batch_id_) REFERENCES public.act_ru_batch(id_),
+            CONSTRAINT act_fk_var_bytearray FOREIGN KEY (bytearray_id_) REFERENCES public.act_ge_bytearray(id_),
+            CONSTRAINT act_fk_var_case_exe FOREIGN KEY (case_execution_id_) REFERENCES public.act_ru_case_execution(id_),
+            CONSTRAINT act_fk_var_case_inst FOREIGN KEY (case_inst_id_) REFERENCES public.act_ru_case_execution(id_),
+            CONSTRAINT act_fk_var_exe FOREIGN KEY (execution_id_) REFERENCES public.act_ru_execution(id_),
+            CONSTRAINT act_fk_var_procinst FOREIGN KEY (proc_inst_id_) REFERENCES public.act_ru_execution(id_)
+            );
+            CREATE INDEX act_idx_batch_id ON public.act_ru_variable USING btree (batch_id_);
+            CREATE INDEX act_idx_var_bytearray ON public.act_ru_variable USING btree (bytearray_id_);
+            CREATE INDEX act_idx_var_case_exe ON public.act_ru_variable USING btree (case_execution_id_);
+            CREATE INDEX act_idx_var_case_inst_id ON public.act_ru_variable USING btree (case_inst_id_);
+            CREATE INDEX act_idx_var_exe ON public.act_ru_variable USING btree (execution_id_);
+            CREATE INDEX act_idx_var_procinst ON public.act_ru_variable USING btree (proc_inst_id_);
+            CREATE INDEX act_idx_variable_task_id ON public.act_ru_variable USING btree (task_id_);
+            CREATE INDEX act_idx_variable_task_name_type ON public.act_ru_variable USING btree (task_id_, name_, type_);
+            CREATE INDEX act_idx_variable_tenant_id ON public.act_ru_variable USING btree (tenant_id_);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

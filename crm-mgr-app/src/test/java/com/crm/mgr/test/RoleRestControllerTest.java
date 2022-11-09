@@ -3,12 +3,14 @@ package com.crm.mgr.test;
 import com.crm.mgr.app.CrmMgrApplication;
 import com.crm.mgr.dto.RoleDto;
 import com.crm.mgr.service.impl.RoleService;
+import com.crm.mgr.test.tool.AuthTestTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,9 +37,11 @@ public class RoleRestControllerTest {
 
     @Test
     public void shouldCreateRole() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "admin", "sa");
         RoleDto roleDto = new RoleDto();
         roleDto.setRole("role");
         mockMvc.perform(post("/api/v1/role")
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(roleDto)))
                 .andExpect(status().isOk())
@@ -46,20 +50,24 @@ public class RoleRestControllerTest {
 
     @Test
     public void shouldDeleteRole() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "admin", "sa");
         RoleDto roleDto = new RoleDto();
         roleDto.setRole("role");
         roleDto = roleService.createRole(roleDto);
         mockMvc.perform(delete("/api/v1/role/" + roleDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void shouldModifyRole() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "admin", "sa");
         RoleDto roleDto = new RoleDto();
         roleDto.setRole("role");
         roleDto = roleService.createRole(roleDto);
         mockMvc.perform(put("/api/v1/role/" + roleDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(roleDto)))
                 .andExpect(status().isOk())
@@ -68,10 +76,12 @@ public class RoleRestControllerTest {
 
     @Test
     public void shouldGetRoleById() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "admin", "sa");
         RoleDto roleDto = new RoleDto();
         roleDto.setRole("role");
         roleDto = roleService.createRole(roleDto);
         mockMvc.perform(get("/api/v1/role/" + roleDto.getId().toString())
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role", is("role")));
@@ -79,10 +89,12 @@ public class RoleRestControllerTest {
 
     @Test
     public void shouldGetRoles() throws Exception {
+        String token = AuthTestTool.obtainAccessToken(mockMvc, "admin", "sa");
         RoleDto roleDto = new RoleDto();
         roleDto.setRole("role");
         roleDto = roleService.createRole(roleDto);
         mockMvc.perform(get("/api/v1/role")
+                        .header(HttpHeaders.AUTHORIZATION, token)
                         .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].role", is("Sales Rep")));
