@@ -3,6 +3,11 @@ package com.crm.mgr.service.jwt;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
+
+import com.crm.mgr.dto.JwtTokenDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -12,9 +17,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtTokenUtil implements Serializable {
+    public static final String SEPARATOR = "\\.";
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
     @Value("${jwt.secret}")
     private String secret;
+
+    private final ObjectMapper objectMapper;
+
+    public JwtTokenUtil(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -53,5 +65,19 @@ public class JwtTokenUtil implements Serializable {
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public JwtTokenDto decodeJwtToken(String encodedToken) {
+        String[] splitEncodedToken = encodedToken.split(SEPARATOR);
+        String base64EncodedBody = splitEncodedToken[1];
+        org.apache.tomcat.util.codec.binary.Base64 base64Url = new Base64(true);
+        String body = new String(base64Url.decode(base64EncodedBody));
+        try {
+            JwtTokenDto jwtTokenDto = objectMapper.readValue(body, JwtTokenDto.class);
+            jwtTokenDto.setDecodedToken(encodedToken);
+            return jwtTokenDto;
+        } catch (JsonProcessingException e) {
+            return null;
+        }
     }
 }

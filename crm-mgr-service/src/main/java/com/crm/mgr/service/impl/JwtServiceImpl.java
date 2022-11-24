@@ -1,6 +1,8 @@
 package com.crm.mgr.service.impl;
 
+import com.crm.mgr.dto.JwtTokenDto;
 import com.crm.mgr.service.jwt.JwtTokenUtil;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -21,10 +23,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String signIn(String login, String password) throws Exception {
+    public JwtTokenDto signIn(String login, String password) throws Exception {
         authenticate(login, password);
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(login);
-        return jwtTokenUtil.generateToken(userDetails);
+        String encodedToken = jwtTokenUtil.generateToken(userDetails);
+        return jwtTokenUtil.decodeJwtToken(encodedToken);
     }
 
     private void authenticate(String username, String password) throws Exception {

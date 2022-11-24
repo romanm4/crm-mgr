@@ -1,5 +1,6 @@
 package com.crm.mgr.rest;
 
+import com.crm.mgr.dto.JwtTokenDto;
 import com.crm.mgr.service.impl.JwtService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class JwtRestController {
     }
 
     @GetMapping(path = "/sign-in", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String signIn(@RequestParam String login, @RequestParam String password) throws Exception {
+    public JwtTokenDto signIn(@RequestParam String login, @RequestParam String password) throws Exception {
         return jwtService.signIn(login, password);
     }
 }

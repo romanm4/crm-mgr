@@ -1,7 +1,7 @@
 package com.crm.mgr.service.impl;
 
-import com.crm.mgr.dto.AccountDto;
+import com.crm.mgr.dto.JwtTokenDto;
 
 public interface JwtService {
-    String signIn(String login, String password) throws Exception;
+    JwtTokenDto signIn(String login, String password) throws Exception;
 }
